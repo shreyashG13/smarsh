@@ -34,4 +34,38 @@ To build the SpringBoot application, follow these steps:
    ```bash
    mvn clean install
 
+##Running the Application Locally
+
+You can run the SpringBoot application locally using the following steps:
+
+In the terminal, navigate to the project root directory.
+
+Run the following command to start the application:
+
+bash
+Copy code
+java -jar target/your-application-name.jar
+Replace your-application-name.jar with the actual name of the JAR file generated during the build.
+
+The application will start, and you will see logs indicating that the application has started successfully.
+
+Open a web browser and access the application at http://localhost:8080 (or the specified port if you configured it differently).
+
+##Deploying the Application
+To deploy your SpringBoot application to a production environment, follow these general steps:
+
+Prepare a production environment, such as a cloud server or a containerized environment (e.g., Docker, Kubernetes).
+
+Copy the generated JAR file (target/your-application-name.jar) to the production environment.
+
+Configure any environment-specific properties, such as database connection settings, in the application.properties or application.yml file.
+
+Run the application on the production environment using the java -jar command, as shown in the "Running the Application Locally" section.
+
+Set up any necessary infrastructure (e.g., a web server, load balancer, database) based on your application's requirements.
+
+Configure security settings, backups, and monitoring as needed for your production environment.
+
+Monitor the application and ensure it is running smoothly in the production environment.
+
 
