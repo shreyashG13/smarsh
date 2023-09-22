@@ -1,0 +1,23 @@
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAQUNOIHEVKBT57QYX 
+      secret-key: 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
+    region:
+      static: us-east-1
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: xmlziofilessmarsh
+
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 2048MB
+      max-request-size: 2048MB
+
+#server:
+ # port: 8090
