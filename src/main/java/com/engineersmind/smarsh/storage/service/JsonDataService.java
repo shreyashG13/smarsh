@@ -24,6 +24,7 @@ public class JsonDataService {
      this.restTemplate = restTemplate;
      this.baseUrl = baseUrl;
      this.authToken = authToken;
+     
  }
 
  public String fetchJsonData(String date, boolean historicalData) {

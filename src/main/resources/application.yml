@@ -1,8 +1,13 @@
 cloud:
   aws:
     credentials:
+<<<<<<< Updated upstream
       access-key: 
       secret-key: 
+=======
+      access-key: AKIAQUNOIHEVPC52FYVA 
+      secret-key: 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
+>>>>>>> Stashed changes
     region:
       static: us-east-1
     stack:
@@ -19,5 +24,12 @@ spring:
       max-file-size: 2048MB
       max-request-size: 2048MB
 
+api:
+ base:
+  url: https://bff.staging.iconnections.io/api/message/history
+ auth:
+  token: 4cabc247-ae3c-4f43-8aba-c5754f3ff075
+#api.base.url=https://bff.staging.iconnections.io/api/message/history
+#api.auth.token=4cabc247-ae3c-4f43-8aba-c5754f3ff075
 #server:
  # port: 8090
