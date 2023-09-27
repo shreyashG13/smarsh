@@ -5,8 +5,8 @@ cloud:
       access-key: 
       secret-key: 
 =======
-      access-key: AKIAQUNOIHEVPC52FYVA 
-      secret-key: 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
+      access-key:  
+      secret-key: 
 >>>>>>> Stashed changes
     region:
       static: us-east-1
