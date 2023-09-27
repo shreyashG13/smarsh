@@ -8,40 +8,40 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+
 @Service
 public class JsonDataService {
 
-    private final String apiUrl;
-    private final RestTemplate restTemplate;
-    private final String authToken; // Your authorization token
+ private final String baseUrl; 
+ private final RestTemplate restTemplate;
+ private final String authToken; // It will act as both your authorization token and taskId
 
-    @Autowired
-    public JsonDataService(
-            RestTemplate restTemplate,
-            @Value("${api.url}") String apiUrl,
-            @Value("${api.auth.token}") String authToken) {
-        this.restTemplate = restTemplate;
-        this.apiUrl = apiUrl;
-        this.authToken = authToken;
-    }
+ @Autowired
+ public JsonDataService(
+         RestTemplate restTemplate,
+         @Value("${api.base.url}") String baseUrl, 
+         @Value("${api.auth.token}") String authToken) {
+     this.restTemplate = restTemplate;
+     this.baseUrl = baseUrl;
+     this.authToken = authToken;
+ }
 
-    public String fetchJsonData() {
-        try {
-            // Create HttpHeaders and set the authorization token
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Bearer " + authToken);
+ public String fetchJsonData(String date, boolean historicalData) {
+     try {
+         HttpHeaders headers = new HttpHeaders();
+         headers.set("Authorization", "Bearer " + authToken);
 
-            // Create an HttpEntity with the headers
-            HttpEntity<String> entity = new HttpEntity<>(headers);
+         // Using authToken as taskId
+         String fullUrl = baseUrl + "?date=" + date + "&historicalData=" + historicalData + "&taskId=" + authToken;
 
-            // Make the GET request with the entity
-            ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, String.class);
+         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            // Process the response
-            return response.getBody();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+         ResponseEntity<String> response = restTemplate.exchange(fullUrl, HttpMethod.GET, entity, String.class);
+
+         return response.getBody();
+     } catch (Exception e) {
+         e.printStackTrace();
+         return null;
+     }
+ }
 }

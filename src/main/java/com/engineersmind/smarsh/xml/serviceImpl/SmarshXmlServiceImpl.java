@@ -46,13 +46,13 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 		
 		RestTemplate restTemplate=new RestTemplate();
         // Get 10th record data
-        URL getUrl = new URL("https://bff.staging.iconnections.io/api/message/history");
+        URL getUrl = new URL("https://bff.staging.iconnections.io/api/message/history?date=2023-09-25&historicalData=true&taskId=4cabc247-ae3c-4f43-8aba-c5754f3ff075");
         String apiUrl=getUrl.toString();
        
         
             // Create HttpHeaders and set the authorization token
             HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Bearer " + authToken);
+            //headers.set("Authorization", "Bearer " + authToken);
            // HttpURLConnection conection = (HttpURLConnection) getUrl.openConnection();
           
             
