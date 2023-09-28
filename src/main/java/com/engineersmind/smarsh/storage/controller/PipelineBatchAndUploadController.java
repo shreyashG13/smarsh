@@ -12,8 +12,14 @@ import com.engineersmind.smarsh.storage.service.ZipAndBatchService;
 import com.engineersmind.smarsh.xml.service.SmarshXmlService;
 
 import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+import java.util.Locale;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.Path;
 @RestController
 @RequestMapping("/pipeline")
 public class PipelineBatchAndUploadController {
@@ -27,9 +33,33 @@ public class PipelineBatchAndUploadController {
     @Autowired
     private SmarshXmlService smarshXmlService;
 
+   
+    
     @Value("${directory.path}")
     private String dir;
+    
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("ddMMMMyyyy", Locale.ENGLISH);
 
+    public String getFullDirectoryPath() {
+        String formattedDate = LocalDate.now().format(DATE_FORMATTER).toLowerCase();
+
+        Path fullPath = Paths.get(dir, formattedDate);
+
+        // Ensure directory exists. If directory already exists, mkdirs has no effect.
+        if (Files.notExists(fullPath)) {
+            try {
+                Files.createDirectories(fullPath);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to create directory: " + fullPath, e);
+            }
+        }
+
+        return fullPath.toString();
+    }
+
+  
+	 
+	
     @PostMapping("/process-xmls")
     public ResponseEntity<String> processXmls(@RequestParam int count) {
         try {
@@ -37,7 +67,7 @@ public class PipelineBatchAndUploadController {
             smarshXmlService.getApiRequest();
 
             // Step 2: Zip the XMLs
-            List<String> zippedFiles = zipAndBatchService.batchZipFilesInDirectory(dir, count);
+            List<String> zippedFiles = zipAndBatchService.batchZipFilesInDirectory(getFullDirectoryPath(), count);
             
             // Step 3: Upload to S3
             zippedFiles.forEach(this::uploadFileToS3);

@@ -1,14 +1,18 @@
 package com.engineersmind.smarsh.xml.serviceImpl;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -172,8 +176,18 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 				        +"\n"+"</FileDump>";
 	    	//returning the final created string of Elements
 			 String finalXmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+"\n"+xmlElementString ;
+			 
+			 LocalDate currentDate = LocalDate.now();
+	         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMMMyyyy", Locale.ENGLISH);
+	         String formattedDate = currentDate.format(formatter).toLowerCase(); // e.g., "13sept2023"
+	         File directory = new File("C:\\work\\xml\\"+formattedDate);
+	         if (!directory.exists()){
+	             directory.mkdirs(); // This will create any missing directories in the path.
+	         }
+
+	         FileWriter file1 = new FileWriter(directory.getAbsolutePath() + "\\" + c.getRoomId() + ".xml");
+
 			
-			 FileWriter file1 = new FileWriter("C:\\work\\xml\\"+c.getRoomId()+".xml");
 		    	file1.write(finalXmlString);   
 	        file1.flush();  
 	        log.info("------------Your XML data is successfully written into XmlForRoomChatInteractionJson.xml---------");  
