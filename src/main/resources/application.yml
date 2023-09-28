@@ -1,13 +1,9 @@
 cloud:
   aws:
     credentials:
-<<<<<<< Updated upstream
       access-key: 
       secret-key: 
-=======
-      access-key: AKIAQUNOIHEVPC52FYVA 
-      secret-key: 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
->>>>>>> Stashed changes
+
     region:
       static: us-east-1
     stack:
