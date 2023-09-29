@@ -22,14 +22,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ZipAndBatchService {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmss");
-		String currentTime = LocalDateTime.now().format(formatter);
+		
+		
 		// This will be the base directory where all zipped files will be stored.
 		private static final String BASE_ZIPPED_DIRECTORY = "C:/work/zipped/";
 
 		private String getZippedDirectoryPath() {
-		    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMMMMyyyy", Locale.ENGLISH);
-		    String formattedDate = LocalDate.now().format(dateFormatter).toLowerCase();
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMMMMyyyy", Locale.ENGLISH);
+	        String formattedDate = LocalDate.now().format(dateFormatter).toLowerCase();
 		    
 		    // Ensure that there's a directory separator at the end
 		    String fullPath = BASE_ZIPPED_DIRECTORY.endsWith(File.separator) 
@@ -47,9 +47,12 @@ public class ZipAndBatchService {
 		}
 
 		public String zipFilesInDirectory(String directoryPath) {
-		    String zipFileName = "zipped_files_" + currentTime  + ".zip";
-		    String zipFilePath = getZippedDirectoryPath() + "/" + zipFileName;  // Added a separator
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmss");
+	        String currentTime = LocalDateTime.now().format(formatter);  // Moved here
 
+	        String zipFileName = "zipped_files_" + currentTime  + ".zip";
+	        String zipFilePath = getZippedDirectoryPath() + zipFileName;
+	        
 		    try (FileOutputStream fos = new FileOutputStream(zipFilePath);
 		         ZipOutputStream zos = new ZipOutputStream(fos)) {
 
@@ -75,48 +78,54 @@ public class ZipAndBatchService {
 		    }
 		}
 	    
-	    public String zipFilesInDirectory2(String directoryPath) {
-	        String zipFileName = "zipped_files_" + currentTime  + ".7z";
-	        String zipFilePath = getZippedDirectoryPath() + zipFileName;
+		public String zipFilesInDirectory2(String directoryPath) {
+		    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmss");
+		    String currentTime = LocalDateTime.now().format(formatter);  // Fetch the current time for this function call
 
-	        try (SevenZOutputFile sevenZOutputFile = new SevenZOutputFile(new File(zipFilePath))) {
+		    String zipFileName = "zipped_files_" + currentTime  + ".7z";
+		    String zipFilePath = getZippedDirectoryPath() + zipFileName;
 
-	            File directory = new File(directoryPath);
-	            if (!directory.exists() || !directory.isDirectory()) {
-	                System.err.println("Invalid directory path: " + directoryPath);
-	                return null;
-	            }
+		    try (SevenZOutputFile sevenZOutputFile = new SevenZOutputFile(new File(zipFilePath))) {
+		        File directory = new File(directoryPath);
 
-	            for (File file : directory.listFiles()) {
-	                if (file.isFile()) {
-	                    SevenZArchiveEntry entry = sevenZOutputFile.createArchiveEntry(file, file.getName());
-	                    sevenZOutputFile.putArchiveEntry(entry);
+		        if (!directory.exists() || !directory.isDirectory()) {
+		            System.err.println("Invalid directory path: " + directoryPath);
+		            return null;
+		        }
 
-	                    try (FileInputStream fis = new FileInputStream(file)) {
-	                        byte[] buffer = new byte[1024];
-	                        int length;
-	                        while ((length = fis.read(buffer)) > 0) {
-	                            sevenZOutputFile.write(buffer, 0, length);
-	                        }
-	                    } catch (IOException ex) {
-	                        System.err.println("Error while reading file: " + file.getAbsolutePath());
-	                        ex.printStackTrace();
-	                    }
+		        for (File file : directory.listFiles()) {
+		            if (file.isFile()) {
+		                SevenZArchiveEntry entry = sevenZOutputFile.createArchiveEntry(file, file.getName());
+		                sevenZOutputFile.putArchiveEntry(entry);
 
-	                    sevenZOutputFile.closeArchiveEntry();
-	                }
-	            }
+		                try (FileInputStream fis = new FileInputStream(file)) {
+		                    byte[] buffer = new byte[1024];
+		                    int length;
+		                    while ((length = fis.read(buffer)) > 0) {
+		                        sevenZOutputFile.write(buffer, 0, length);
+		                    }
+		                } catch (IOException ex) {
+		                    System.err.println("Error while reading file: " + file.getAbsolutePath());
+		                    ex.printStackTrace();
+		                }
 
-	            return zipFilePath;
-	        } catch (IOException e) {
-	            System.err.println("Error while creating 7z file: " + zipFilePath);
-	            e.printStackTrace();
-	            return null;
-	        }
-	    }
+		                sevenZOutputFile.closeArchiveEntry();
+		            }
+		        }
+
+		        return zipFilePath;
+		    } catch (IOException e) {
+		        System.err.println("Error while creating 7z file: " + zipFilePath);
+		        e.printStackTrace();
+		        return null;
+		    }
+		}
+
 	   //ZIPPING A FILES IN A BATCH WITH NUMBER OF FILES
 	    public List<String> batchZipFilesInDirectory(String directoryPath, int batchSize) {
-	        File directory = new File(directoryPath);
+	    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmss");
+	        String currentTime = LocalDateTime.now().format(formatter);
+	    	File directory = new File(directoryPath);
 	        File[] files = directory.listFiles();
 
 	        if (files == null) {
@@ -165,7 +174,7 @@ public class ZipAndBatchService {
 	    }
 	    
 	    
-	    //ZIPPING A FILES IN A BATCH WITH FILE SIZE of created ZIP 
+	 // ZIPPING A FILES IN A BATCH WITH FILE SIZE of created ZIP 
 	    public List<String> batchZipFilesInDirectoryBySize(String directoryPath, long batchSizeMB) {
 	        File directory = new File(directoryPath);
 	        File[] files = directory.listFiles();
@@ -179,7 +188,10 @@ public class ZipAndBatchService {
 	        int currentIndex = 0;
 
 	        while (currentIndex < totalFiles) {
-	            String batchZipFileName = "batch_" + currentIndex + currentTime  + ".zip";
+	            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmss");
+	            String currentTime = LocalDateTime.now().format(formatter);
+	            
+	            String batchZipFileName = "batch_" + currentIndex + "_" + currentTime  + ".zip";
 	            String batchZipFilePath = getZippedDirectoryPath() + batchZipFileName;
 	            zipFilePaths.add(batchZipFilePath);
 
@@ -214,7 +226,7 @@ public class ZipAndBatchService {
 	        return zipFilePaths;
 	    }
 
-	    //ZIPPING A FILES IN A BATCH WITH FILE SIZE of input files
+	 // ZIPPING A FILES IN A BATCH WITH FILE SIZE of input files
 	    public List<String> batchZipFilesInDirectoryBySize2(String directoryPath, long batchSizeMB) {
 	        File directory = new File(directoryPath);
 	        File[] files = directory.listFiles();
@@ -227,9 +239,9 @@ public class ZipAndBatchService {
 
 	        List<String> zipFilePaths = new ArrayList<>();
 	        int currentIndex = 0;
+	        int n = 1;
 
 	        while (currentIndex < files.length) {
-	        	int n =1;
 	            long currentBatchSize = 0;
 	            List<File> batchFiles = new ArrayList<>();
 	            
@@ -240,13 +252,17 @@ public class ZipAndBatchService {
 	            }
 	            
 	            if (!batchFiles.isEmpty()) {
-	                String batchZipFileName = "batch_" +n+ currentTime  + ".zip";
+	                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmss");
+	                String currentTime = LocalDateTime.now().format(formatter);
+	                
+	                String batchZipFileName = "batch_" + n + "_" + currentTime + ".zip";
 	                String batchZipFilePath = getZippedDirectoryPath() + batchZipFileName;
 	                zipFilePaths.add(batchZipFilePath);
-	                n=n+1;
+	                n++;
+
 	                try (FileOutputStream fos = new FileOutputStream(batchZipFilePath);
 	                     ZipOutputStream zos = new ZipOutputStream(fos)) {
-	                     
+	                         
 	                    for (File file : batchFiles) {
 	                        ZipEntry zipEntry = new ZipEntry(file.getName());
 	                        zos.putNextEntry(zipEntry);
@@ -268,6 +284,5 @@ public class ZipAndBatchService {
 
 	        return zipFilePaths;
 	    }
-
 
 }

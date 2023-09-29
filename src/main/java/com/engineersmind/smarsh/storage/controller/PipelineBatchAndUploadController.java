@@ -37,6 +37,8 @@ public class PipelineBatchAndUploadController {
     
     @Value("${directory.path}")
     private String dir;
+    @Value("${directory.zippath}")
+    private String zipDir;
     
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("ddMMMMyyyy", Locale.ENGLISH);
 
@@ -56,9 +58,39 @@ public class PipelineBatchAndUploadController {
 
         return fullPath.toString();
     }
+    public String getZippedFilesPath() {
+        String formattedDate = LocalDate.now().format(DATE_FORMATTER).toLowerCase();
+
+        Path fullPath = Paths.get(zipDir, formattedDate);
+		return fullPath.toString();
+        
+    }
+    
 
   
-	 
+    public void deleteFilesFromDirectory(String directoryPath) {
+
+
+    	File directory = new File(directoryPath);
+    	File[] files = directory.listFiles();
+
+
+    	if(directory.exists() && directory.isDirectory()) {
+    		if (files != null) {
+    			for (File file : files) {
+    				if (file.isFile()) {
+    					if (!file.delete()) {
+    						System.err.println("Failed to delete file: " + file.getAbsolutePath());
+    					}
+    				}
+    			}
+    		}
+    	}
+    	else {
+    		System.err.println("Directory does not exist or isn't a directory: " + directoryPath);
+    	}
+    }
+
 	
     @PostMapping("/process-xmls")
     public ResponseEntity<String> processXmls(@RequestParam int count) {
@@ -71,6 +103,12 @@ public class PipelineBatchAndUploadController {
             
             // Step 3: Upload to S3
             zippedFiles.forEach(this::uploadFileToS3);
+            
+         // Step 4:After uploading to S3, delete the zipped files.
+            String pathToDelete = getZippedFilesPath();
+            System.out.println("Attempting to delete files from: " + pathToDelete);
+
+            deleteFilesFromDirectory(getZippedFilesPath());
         } catch(Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Error during XML processing, zipping, or uploading!");
