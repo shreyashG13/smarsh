@@ -71,3 +71,4 @@ local.properties
 # Ignore Gradle-related files
 .gradle/
 build/
+/.temp-SmarshApplication-classpath-arg-1696409086634.txt
