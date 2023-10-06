@@ -18,7 +18,7 @@ import com.engineersmind.smarsh.storage.service.ZipAndBatchService;
 public class ZipAndBatchController {
 	
 	@Autowired
-    private ZipAndBatchService service;
+	ZipAndBatchService service;
 	
 	 @PostMapping("/zip")
 	    public ResponseEntity<String> zipDirectory(@RequestParam(value = "directoryPath") String directoryPath) {
