@@ -64,7 +64,9 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 		}
 	}
 	for(ChatRoom c:chatRoomList) {
+		if(c.getStartTimeUtc()!=null) {
 		long stri=changeTimeStamptoSEpoch(c.getStartTimeUtc());
+		
 		String  xmlElementString=new String();
 			//Adding Head Elements
 		xmlElementString=xmlElementString+"<FileDump xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"
@@ -148,6 +150,7 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 			      	+"\n"+"</ParticipantLeft>"
 			      	+"\n"+"\n";
 					 }
+			}
 			}
 			 xmlElementString= xmlElementString+"<EndTimeUTC>"+"123456"+"<EndTimeUtc/>"
 				        +"\n" +"</Conversation>"+"\n"
