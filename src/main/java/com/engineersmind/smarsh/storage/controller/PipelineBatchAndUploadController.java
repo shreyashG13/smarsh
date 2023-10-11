@@ -4,12 +4,15 @@ package com.engineersmind.smarsh.storage.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import com.engineersmind.smarsh.storage.service.StorageService;
 
 import com.engineersmind.smarsh.storage.service.ZipAndBatchService;
 import com.engineersmind.smarsh.xml.service.SmarshXmlService;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +23,8 @@ import java.util.Locale;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+@Slf4j
 @RestController
 @RequestMapping("/pipeline")
 public class PipelineBatchAndUploadController {
@@ -93,16 +98,21 @@ public class PipelineBatchAndUploadController {
 
 	
     @PostMapping("/process-xmls")
-    public ResponseEntity<String> processXmls(@RequestParam int count) {
+    @Scheduled(cron = "0 5 10 * * ?", zone = "America/New_York")
+    public ResponseEntity<String> processXmls(/*@RequestParam int count*/) {
         try {
             // Step 1: Generate XMLs
             smarshXmlService.getApiRequest();
 
             // Step 2: Zip the XMLs
-            List<String> zippedFiles = zipAndBatchService.batchZipFilesInDirectory(getFullDirectoryPath(), count);
+            //commenting old code for zipping in batch and adding single zip for all files
+            //List<String> zippedFiles = zipAndBatchService.batchZipFilesInDirectory(getFullDirectoryPath() ,10/* count*/);
+            String zipFilePath = zipAndBatchService.zipFilesInDirectory(getFullDirectoryPath()); 
             
             // Step 3: Upload to S3
-            zippedFiles.forEach(this::uploadFileToS3);
+            
+            uploadFileToS3(zipFilePath);
+            //zippedFiles.forEach(this::uploadFileToS3);  //commenting an old code for uploading all batched files
             
          // Step 4:After uploading to S3, delete the zipped files.
             String pathToDelete = getZippedFilesPath();
@@ -161,6 +171,7 @@ public class PipelineBatchAndUploadController {
     private void uploadFileToS3(String filePath) {
         try {
             File file = new File(filePath);
+           System.out.println("file : " + file);
             storageService.uploadFile(file);
         } catch (Exception e) {
             e.printStackTrace();
