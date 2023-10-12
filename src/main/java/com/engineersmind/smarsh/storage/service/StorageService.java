@@ -51,7 +51,6 @@ public class StorageService {
         }
     }
   */ 
-    
     //FOR NORMAL FILE UPLOAD
     public String uploadFile(MultipartFile file) {
         try {
