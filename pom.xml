@@ -79,7 +79,12 @@
 		    <artifactId>commons-fileupload</artifactId>
 		    <version>1.4</version>
 		</dependency>
-		<!-- Dependencies for Zip and Batch Services End 9/22/2023 -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Dependencies for Zip and Batch Services End 9/22/2023 -->
 		
 		<!-- Dependencies JPA start 9/22/2023 -->
 		<!--

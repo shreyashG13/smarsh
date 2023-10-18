@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.engineersmind.smarsh.xml.model.*;
 import com.engineersmind.smarsh.xml.service.*;
-//import com.smarshDumpXml.model.ChatRoom;
-//import com.smarshDumpXml.model.Participant;
-//import com.smarshDumpXml.model.Root;
-//import com.smarshDumpXml.service.SmarshXmlService;
+
 
 
 @Service
@@ -63,6 +60,7 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 			}
 		}
 	}
+
 	for(ChatRoom c:chatRoomList) {
 		long stri=changeTimeStamptoSEpoch(c.getStartTimeUtc());
 		String  xmlElementString=new String();
@@ -299,6 +297,9 @@ for(ChatRoom c:chatRoomList) {
 		 System.out.println(epoch+"----------------");
 		 return epoch;
 	 }
-}	
+
+	public void setRestTemplate(RestTemplate restTemplate) {
+	}
+}
 
 
