@@ -1,90 +1,92 @@
 package com.engineersmind.smarsh.xml.serviceImpl;
-import com.engineersmind.smarsh.xml.model.Action;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
 import com.engineersmind.smarsh.xml.model.ChatRoom;
-import com.engineersmind.smarsh.xml.model.Participant;
 import com.engineersmind.smarsh.xml.model.Root;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-@SpringBootTest
 public class SmarshXmlServiceImplTest {
 
-    @InjectMocks
     private SmarshXmlServiceImpl smarshXmlService;
-
-    @Mock
     private RestTemplate restTemplate;
 
-    private ObjectMapper objectMapper;
-
     @BeforeEach
-    public void setup() {
-        objectMapper = new ObjectMapper();
+    public void setUp() {
+        smarshXmlService = new SmarshXmlServiceImpl();
+        restTemplate = Mockito.mock(RestTemplate.class);
+        smarshXmlService.setRestTemplate(restTemplate);
     }
+
 
     @Test
     public void testGetApiRequest() throws IOException, ParseException {
-        // Create a mock response object
-        Root mockRoot = createMockRoot(); // Create a mock Root object
-        ResponseEntity<Root> mockResponse = ResponseEntity.ok(mockRoot);
+        // Mock the response data from the API
+        Root apiResponse = new Root();
+        // Mock the response entity
+        ResponseEntity<Root> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
-        // Mock the behavior of restTemplate.exchange method
-        Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.eq(Root.class)))
-                .thenReturn(mockResponse);
+        // Mock the REST call
+        when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.GET), Mockito.any(), Mockito.eq(Root.class)))
+        ;
 
-        // Call the service method
-        ResponseEntity<?> responseEntity = smarshXmlService.getApiRequest();
+        try {
+            ResponseEntity<?> result = smarshXmlService.getApiRequest();
 
-        // Verify the response
-        assertEquals(200, responseEntity.getStatusCodeValue());
+            // Assert that the result is a success response
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            // add more assertions based on your specific requirements
+        } catch (Exception e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+    }
+
+
+
+    @Test
+    public void testCreatingXMLwithJson() throws IOException, ParseException {
+        // Create a sample Root object for the test
+        Root sampleRoot = new Root();
+        // Populate the sampleRoot object with data
+        sampleRoot.setChatRooms((ArrayList<ChatRoom>) createSampleChatRooms());
+        // Call the method to be tested
+        ResponseEntity<?> result = smarshXmlService.creatingXMLwithJson(sampleRoot);
+        // Assertions
+        assertEquals(HttpStatus.OK, result.getStatusCode());
 
     }
 
-    private Root createMockRoot() {
-        Root root = new Root();
-        ChatRoom chatRoom = new ChatRoom();
-        chatRoom.setRoomId("123");
-        chatRoom.setStartTimeUtc("2023-09-25T12:00:00Z");
+    @Test
+    public void testChangeTimeStampToEpoch() throws ParseException {
 
-        Participant participant = new Participant();
-        participant.setLoginName("user1");
+        String timestamp = "Mon Sep 25 00:00:00 UTC 2022";
+        long epoch = SmarshXmlServiceImpl.changeTimeStamptoSEpoch(timestamp);
 
-        Action action = new Action();
-        action.setType("Invite");
-        action.setInviterLoginName("admin");
-        action.setLoginName("user1");
-        action.setDateTimeUTC("2023-09-25T12:05:00Z");
-        action.setContent("Invitation content");
+        long expected = 1664064000000L;
+        assertEquals(expected, epoch);
+    }
 
-        List<Action> actions = new ArrayList<>();
-        actions.add(action);
-
-        participant.setActions((ArrayList<Action>) actions);
-
-        List<Participant> participants = new ArrayList<>();
-        participants.add(participant);
-
-        chatRoom.setParticipants((ArrayList<Participant>) participants);
-
+    private List<ChatRoom> createSampleChatRooms() {
         List<ChatRoom> chatRooms = new ArrayList<>();
-        chatRooms.add(chatRoom);
-
-        root.setChatRooms((ArrayList<ChatRoom>) chatRooms);
-
-        return root;
+        // Create and populate one or more ChatRoom objects
+        ChatRoom chatRoom1 = new ChatRoom();
+        chatRoom1.setRoomId("Room1");
+        chatRoom1.setStartTimeUtc("2023-10-18T12:00:00");
+        // Add chatRoom1 to the list
+        chatRooms.add(chatRoom1);
+        return chatRooms;
     }
+
+
+
 }

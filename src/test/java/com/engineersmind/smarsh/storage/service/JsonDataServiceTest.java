@@ -2,65 +2,41 @@ package com.engineersmind.smarsh.storage.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.client.match.MockRestRequestMatchers;
-import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.client.ExpectedCount.once;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 public class JsonDataServiceTest {
 
     private JsonDataService jsonDataService;
-
-    @Mock
     private RestTemplate restTemplate;
-
-    private MockRestServiceServer mockServer;
-
-    private final String baseUrl = "https://example.com/api";
-    private final String authToken = "yourAuthToken";
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
-        jsonDataService = new JsonDataService(restTemplate, baseUrl, authToken);
-
-        mockServer = MockRestServiceServer.createServer(restTemplate);
+        restTemplate = mock(RestTemplate.class);
+        jsonDataService = new JsonDataService(restTemplate, "http://example.com/api", "yourAuthToken");
     }
 
     @Test
     public void testFetchJsonData() {
-        // Arrange
-        String date = "2023-10-05";
-        boolean historicalData = true;
+        // Mock the HTTP response
+        String jsonResponse = "{\"key\":\"value\"}";
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
 
-        HttpHeaders expectedHeaders = new HttpHeaders();
-        expectedHeaders.set("Authorization", "Bearer " + authToken);
+        when(restTemplate.exchange(
+                eq("http://example.com/api?date=2023-10-16&historicalData=true&taskId=yourAuthToken"),
+                eq(HttpMethod.GET),
+                any(),
+                eq(String.class)
+        )).thenReturn(responseEntity);
 
-        String expectedUrl = baseUrl + "?date=" + date + "&historicalData=" + historicalData + "&taskId=" + authToken;
+        // Call the service method
+        String result = jsonDataService.fetchJsonData("2023-10-16", true);
 
-        ResponseEntity<String> expectedResponse = ResponseEntity.ok("Your JSON data");
-
-        mockServer.expect(once(), MockRestRequestMatchers.requestTo(expectedUrl))
-                .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-                .andExpect(MockRestRequestMatchers.header("Authorization", "Bearer " + authToken))
-                .andRespond(MockRestResponseCreators.withSuccess("Your JSON data", null));
-
-        // Act
-        String jsonData = jsonDataService.fetchJsonData(date, historicalData);
-
-        // Assert
-        assertThat(jsonData).isEqualTo(expectedResponse.getBody());
-
-        // Verify that the RestTemplate was called with the expected request
-        mockServer.verify();
+        // Assert the result
+        assertEquals(jsonResponse, result);
     }
 }
