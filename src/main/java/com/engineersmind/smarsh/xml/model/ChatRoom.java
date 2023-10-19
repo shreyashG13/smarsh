@@ -15,7 +15,22 @@ public class ChatRoom {
     public String screenType;
     @JsonProperty("Participants") 
     public ArrayList<Participant> participants;
-	
+    @JsonProperty("Perspective") 
+    public String perspective;
+    @JsonProperty("EndTimeUtc") 
+    public String endTimeUtc;
+	public String getEndTimeUtc() {
+		return endTimeUtc;
+	}
+	public void setEndTimeUtc(String endTimeUtc) {
+		this.endTimeUtc = endTimeUtc;
+	}
+	public String getPerspective() {
+		return perspective;
+	}
+	public void setPerspective(String perspective) {
+		this.perspective = perspective;
+	}
 	public String getCallInitiator() {
 		return callInitiator;
 	}

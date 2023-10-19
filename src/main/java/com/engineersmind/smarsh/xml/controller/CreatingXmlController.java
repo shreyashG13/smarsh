@@ -12,15 +12,15 @@ import com.engineersmind.smarsh.xml.service.SmarshXmlService;
 
 
 
+
 @RestController
 public class CreatingXmlController {
 	
 	@Autowired
 	SmarshXmlService smarshXmlService;
-	  @GetMapping("/generate-xmls")
+	  
+	@GetMapping("/generate-xmls")
 	    public ResponseEntity<?> getJsonData() throws IOException, ParseException {
 	        return smarshXmlService.getApiRequest();
 	    }
-	    
-
-}
+	}
