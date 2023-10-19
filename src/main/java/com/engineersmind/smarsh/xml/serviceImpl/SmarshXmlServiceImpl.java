@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.engineersmind.smarsh.xml.model.*;
-import com.engineersmind.smarsh.xml.model.response.ParticipantEntered;
 import com.engineersmind.smarsh.xml.service.*;
 //import com.smarshDumpXml.model.ChatRoom;
 //import com.smarshDumpXml.model.Participant;
@@ -36,9 +35,6 @@ import com.engineersmind.smarsh.xml.service.*;
 public class SmarshXmlServiceImpl implements SmarshXmlService{
 	private static final Logger log = LoggerFactory.getLogger( SmarshXmlServiceImpl.class);
 	
-	@Autowired
-	static
-	ValidationService validationService;
 	
 	
 	@Override
