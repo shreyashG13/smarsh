@@ -1,5 +1,4 @@
 package com.engineersmind.smarsh.storage.service;
-
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -26,18 +25,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 
-
-
-
 @Service
 @Slf4j
 public class StorageService {
 
-    @Value("${application.bucket.name}")
-    private String bucketName;
+    @Value("${application.bucket.name}") String bucketName;
 
-    @Autowired
-    private AmazonS3 s3Client;
+    @Autowired AmazonS3 s3Client;
 /*
     public String uploadFile(MultipartFile file) {
         try {
@@ -369,5 +363,7 @@ public class StorageService {
         return zipFilePaths;
     }
     */
-
+	
+	
+	
 }

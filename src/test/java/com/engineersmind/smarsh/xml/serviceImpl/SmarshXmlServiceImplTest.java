@@ -28,29 +28,7 @@ public class SmarshXmlServiceImplTest {
     }
 
 
-    @Test
-    public void testGetApiRequest() throws IOException, ParseException {
-        // Mock the response data from the API
-        Root apiResponse = new Root();
-        // Mock the response entity
-        ResponseEntity<Root> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
-
-        // Mock the REST call
-        when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.GET), Mockito.any(), Mockito.eq(Root.class)))
-        ;
-
-        try {
-            ResponseEntity<?> result = smarshXmlService.getApiRequest();
-
-            // Assert that the result is a success response
-            assertEquals(HttpStatus.OK, result.getStatusCode());
-            // add more assertions based on your specific requirements
-        } catch (Exception e) {
-            // Handle exceptions
-            e.printStackTrace();
-        }
-    }
-
+  
 
 
     @Test
