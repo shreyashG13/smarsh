@@ -64,7 +64,7 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 	public static ResponseEntity<?> creatingXMLwithJson(Root requestFileDump1)  throws  IOException, ParseException  {
 		
 		List<ChatRoom> chatRoomList=new ArrayList<>();
-		
+		Action action1=new Action();
 		Date date = new Date();
 		SimpleDateFormat DateFor = new SimpleDateFormat("dd MMMM yyyy");
 		String currentDate= DateFor.format(date);
@@ -72,8 +72,8 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 			
 			if(c1.getParticipants()!=null&&c1.getStartTimeUtc()!=null
 					&&c1.getPerspective()!=null&&c1.getEndTimeUtc()!=null
-					&&c1.getScreenType().contains("Meetup")&&c1.getEndTimeUtc()!=c1.getStartTimeUtc()) {
-			
+					&&c1.getEndTimeUtc()!=c1.getStartTimeUtc()) {
+			if(c1.getScreenType().contains("Meetup")||c1.getScreenType().contains("Message")) {
 				for(Participant p:c1.getParticipants()) {
 				if(p.getActions()!=null) {
 				for(Action action:p.getActions()) {
@@ -82,12 +82,15 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 					}
 					}
 				}
-			}
+				}
+				}
 			}
 		}
 	for(ChatRoom c:chatRoomList) {
-		long stri=changeTimeStamptoSEpoch(c.getStartTimeUtc());
+		String stri=changeTimeStamptoSEpoch(c.getStartTimeUtc());
 		List<Participant> participantList=new ArrayList<>();
+		List<Action>  actionList=new ArrayList<>();
+		Participant participant=new Participant();
 		String  xmlElementString=new String();
 			//Adding Head Elements
 		xmlElementString=xmlElementString+"<FileDump xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"
@@ -101,31 +104,40 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 //	 				+"\n"+"<Network>"+fileDump.getNetwork()+"</Network>"
 //	 				+"\n"+"<Channel>"+fileDump.getChannel()+"</Channel>"
 	 				+"\n";
-	    	
-	    	if(c.getParticipants().size()>=1) {
-				participantList.add(c.getParticipants().get(0));
-			}
-	    	else {
-	    		participantList.addAll(c.getParticipants());
-	    	}
-	    for(Participant p:participantList) {
+	    	if(c.getParticipants().size()>=0) {
+				for(int i=0;i<=c.getParticipants().size()-1;i++) {
+				participantList.add(c.getParticipants().get(i));
+				}
+				for(Participant p1:participantList) {
+					actionList.addAll(p1.getActions());
+					for(Action action:actionList) {
+						if(action.getDateTimeUTC()!=null&&action.getType().contains("ParticipantEntered")) {
+							p1.setDateTimeUtc(action.getDateTimeUTC());
+						}
+					}
+					participantList.removeAll(p1.getActions());
 					xmlElementString= xmlElementString+"\n"+"<ParticipantEntered>"
-		      			+"\n"+"<LoginName>"+p.getLoginName()+"</LoginName>"
-//		      			+"\n"+"<DateTimeUTC>"+action.getDateTimeUTC()+"</DateTimeUTC>"
-//		      	+"\n"+"<InternalFlag>"+pe.getInternalFlag()+"</InternalFlag>"
-//		      	+"\n"+"<ConversationID>"+pe.getConversionId()+"<ConversationID/>"
-		      	+"\n"+"<CorporateEmailId>"+p.getCorporateEmailId()+"<CorporateEmailID>"
-		      	+"\n"+"</ParticipantEntered>"
-		      	+"\n"+"\n";
-		for(Action action:p.getActions()) {
-				long str=changeTimeStamptoSEpoch(action.getDateTimeUTC());
+			      			+"\n"+"<LoginName>"+p1.getLoginName()+"</LoginName>"
+	      			+"\n"+"<DateTimeUTC>"+p1.getDateTimeUtc()+"</DateTimeUTC>"
+//			      	+"\n"+"<InternalFlag>"+pe.getInternalFlag()+"</InternalFlag>"
+//			      	+"\n"+"<ConversationID>"+pe.getConversionId()+"<ConversationID/>"
+//			      	+"\n"+"<CorporateEmailId>"+p1.getCorporateEmailId()+"<CorporateEmailID>"
+			      	+"\n"+"</ParticipantEntered>"
+			      	+"\n"+"\n";
+				action1.setLoginName(p1.getLoginName());
+				
+				}
+				}
+	   for(Action action:actionList) {
+		   String str=changeTimeStamptoSEpoch(action.getDateTimeUTC());
 	//Adding element for invite
 				if(action.getType().contains("Invite")) {
+					str=changeTimeStamptoSEpoch(action.getDateTimeUTC());
 					 xmlElementString = xmlElementString+"\n"+"<Invite>"
 							 +"\n"+"<InviterLoginName>"+action.getInviterLoginName()+"</InviterLoginName>"
 				      			+"\n"+"<LoginName>"+action.getLoginName()+"</LoginName>"
 				      			+"\n"+"<DateTimeUTC>"+str+"</DateTimeUTC>"
-				      	+"\n"+"<Content>"+action.getContent()+"</Content>"
+				      //	+"\n"+"<Content>"+action.getContent()+"</Content>"
 				     // 	+"\n"+"<Base64Content>"+action.getContent()+"<Base64Content/>"
 				    //  	+"\n"+"<CorporateEmailId>"+p.getCorporateEmailId()+"<CorporateEmailID>"
 				      	+"\n"+"</Invite>"
@@ -133,10 +145,11 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 				}
 							 if(action.getType().contains("Message")) {
 					 //Adding Message Elements
+								 str=changeTimeStamptoSEpoch(action.getDateTimeUTC());
 					 xmlElementString= xmlElementString +"<Message>"
-			 	      			+"\n"+"<LoginName>"+p.getLoginName()+"</LoginName>"
+			 	      			+"\n"+"<LoginName>"+action1.getLoginName()+"</LoginName>"
 			 	      			+"\n"+"<DateTimeUTC>"+str+"</DateTimeUTC>"
-			 	      	+"\n"+"<CorporateEmailId>"+p.getCorporateEmailId()+"</CorporateEmailId>"
+//			 	      	+"\n"+"<CorporateEmailId>"+action.getCorporateEmailId()+"</CorporateEmailId>"
 			 	      +"\n"+"<Content>"+action.getContent()+"</Content>"
 //				 	   	 	      	+"\n"+"<MessageType>"+m.getMessageType()+"</MessageType>"
 //				 	   	 	      	+"\n"+"<MessageId>"+m.getMessageId()+"</MessageId>"
@@ -145,6 +158,7 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 				 }
 					//Adding FiletranferStarted Elements
 					 if(action.getType().contains("Filetranfer")) {
+						 str=changeTimeStamptoSEpoch(action.getDateTimeUTC());
                          xmlElementString= xmlElementString +"<FileTransferStarted>"
 				 	      			+"\n"+"<LoginName>"+action.getLoginName()+"</LoginName>"
 				 	      			+"\n"+"<DateTimeUTC>"+str+"</DateTimeUTC>"
@@ -163,18 +177,31 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 				 	      	+"\n"+"</FileTransferEnd>"
 				 	      	+"\n"+"\n";
 					  }	
-					//Adding ParticipentLeft Elements			 
+					//Adding ParticipentLeft Elements	
+	
 			}
+		
+		for(Participant p2:participantList) {
+			for(Action action:actionList) {
+				if(action.getDateTimeUTC()!=null&&action.getType().contains("ParticipantLeft")) {
+					p2.setDateTimeUtc(action.getDateTimeUTC());
+				}
+			}
+			String str="";
+if(participant.getDateTimeUtc()!=null) {
+			 str=changeTimeStamptoSEpoch(participant.getDateTimeUtc());
+}
+			
 			xmlElementString= xmlElementString +"\n"+"<ParticipantLeft>"
-	      			+"\n"+"<LoginName>"+p.getLoginName()+"</LoginName>"
-	      			//+"\n"+"<DateTimeUTC>"+p.getDateTimeUtc()+"</DateTimeUTC>"
+	      			+"\n"+"<LoginName>"+p2.getLoginName()+"</LoginName>"
+	      			+"\n"+"<DateTimeUTC>"+p2.getDateTimeUtc()+"</DateTimeUTC>"
 //	      	+"\n"+"<InternalFlag>"+pe.getInternalFlag()+"</InternalFlag>"
 //	      	+"\n"+"<ConversationID>"+pe.getConversionId()+"<ConversationID/>"
-	      	+"\n"+"<CorporateEmailId>"+p.getCorporateEmailId()+"<CorporateEmailID>"
+//	      	+"\n"+"<CorporateEmailId>"+participant.getCorporateEmailId()+"<CorporateEmailID>"
 	      	+"\n"+"</ParticipantLeft>"
 	      	+"\n"+"\n";
-			}
-	  long str=changeTimeStamptoSEpoch(c.getEndTimeUtc());
+		}
+	 String str=changeTimeStamptoSEpoch(c.getEndTimeUtc());
 	    	xmlElementString= xmlElementString+"<EndTimeUTC>"+str+"<EndTimeUtc/>"
 				        +"\n" +"</Conversation>"+"\n"
 				        +"\n"+"</FileDump>";
@@ -190,134 +217,15 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
         return ResponseEntity.ok("Your XML data is successfully written into multipleXmlFiles "+""+chatRoomList.size());	   
 		// return ResponseEntity.ok(cl);
 	 }
-		
-	//Xml for group chat interaction
-	public static ResponseEntity<?> creatingXMLForGroupChatwithJson(Root requestFileDump)  throws  IOException, ParseException  {
-		List<ChatRoom> chatRoomList=new ArrayList<>();
-	for(ChatRoom c1:requestFileDump.getChatRooms()) {
-		if(c1.getParticipants()!=null) {
-		for(Participant p:c1.getParticipants()) {
-			if(p.getActions()!=null) {
-			  chatRoomList.add(c1);		
-			}
-			}
-		}
-	}
-for(ChatRoom c:chatRoomList) {
-			String  xmlElementString=new String();
-			//Adding Head Elements
-		xmlElementString=xmlElementString+"<FileDump xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"
-	 				+"\n";
-	    	xmlElementString=xmlElementString+"\n"+"<Conversation Perspective=\"Abend term Finance disussion group channel\">"+
-			"\n"+"<RoomId>"+c.getRoomId()+"</RoomId>"
-	 				+"\n"+"<StartTimeUtc>"+c.getStartTimeUtc()+"<StartTimeUtc/>"
-	 				+"\n"+"<CallInitiator>"+c.getCallInitiator()+"</CallInitiator>"
-//	 				+"\n"+"<CallType>"+fileDump.getCallType()+"</CallType>"
-//	 				+"\n"+"<Vendor>"+fileDump.getVendor()+"</Vendore>"
-//	 				+"\n"+"<Network>"+fileDump.getNetwork()+"</Network>"
-//	 				+"\n"+"<Channel>"+fileDump.getChannel()+"</Channel>"
-	 				+"\n";
-	    	if(c.getParticipants()!=null) {
-			for(Participant p:c.getParticipants()) {
-				//Adding  ParticipentEnter Elements 
-				 xmlElementString= xmlElementString+"\n"+"<ParticipantEntered>"
-			      			+"\n"+"<LoginName>"+p.getLoginName()+"</LoginName>"
-//			      			+"\n"+"<DateTimeUTC>"+action.getDateTimeUTC()+"</DateTimeUTC>"
-//			      	+"\n"+"<InternalFlag>"+pe.getInternalFlag()+"</InternalFlag>"
-//			      	+"\n"+"<ConversationID>"+pe.getConversionId()+"<ConversationID/>"
-			      	+"\n"+"<CorporateEmailId>"+p.getCorporateEmailId()+"<CorporateEmailID>"
-			      	+"\n"+"</ParticipantEntered>"
-			      	+"\n"+"\n";
-				 if(p.getActions()!=null) {
-			for(Action action:p.getActions()) {
-					//Adding element for invite
-				if(action.getType().contains("Invite")) {
-					 xmlElementString = xmlElementString+"\n"+"<Invite>"
-							 +"\n"+"<InviterLoginName>"+action.getInviterLoginName()+"</InviterLoginName>"
-				      			+"\n"+"<LoginName>"+action.getLoginName()+"</LoginName>"
-				      			+"\n"+"<DateTimeUTC>"+action.getDateTimeUTC()+"</DateTimeUTC>"
-				      	+"\n"+"<Content>"+action.getContent()+"</Content>"
-				     // 	+"\n"+"<Base64Content>"+action.getContent()+"<Base64Content/>"
-				    //  	+"\n"+"<CorporateEmailId>"+p.getCorporateEmailId()+"<CorporateEmailID>"
-				      	+"\n"+"</Invite>"
-				      	+"\n";
-				}
-							 if(action.getType().contains("Message")) {
-						
-					  //Adding Message Elements
-					 xmlElementString= xmlElementString +"<Message>"
-			 	      			+"\n"+"<LoginName>"+p.getLoginName()+"</LoginName>"
-			 	      			+"\n"+"<DateTimeUTC>"+action.getDateTimeUTC()+"</DateTimeUTC>"
-			 	      	+"\n"+"<CorporateEmailId>"+p.getCorporateEmailId()+"</CorporateEmailId>"
-			 	      +"\n"+"<Content>"+action.getContent()+"</Content>"
-//				 	   	 	      	+"\n"+"<MessageType>"+m.getMessageType()+"</MessageType>"
-//				 	   	 	      	+"\n"+"<MessageId>"+m.getMessageId()+"</MessageId>"
-				 	   	 	      	+"\n"+"</Message>"
-				 	   	 	      	+"\n"+"\n";
-				 }
-					//Adding FiletranferStarted Elements
-					 if(action.getType().contains("Filetranfer")) {
-                         xmlElementString= xmlElementString +"<FileTransferStarted>"
-				 	      			+"\n"+"<LoginName>"+action.getLoginName()+"</LoginName>"
-				 	      			+"\n"+"<DateTimeUTC>"+action.getDateTimeUTC()+"</DateTimeUTC>"
-				 	      	+"\n"+"<UserFileName>"+action.getUserFileName()+"</UserFileName>"
-				 	      	+"\n"+"<FileName>"+action.getFileName()+"</FileName>"
-				 	      	+"\n"+"<Status>"+action.getStatus()+"</Status>"
-				 	      	+"\n"+"</FileTransferStarted>"
-				 	      	+"\n"+"\n";
-				      		
-				      	//Adding FiletranferEnd Elements
-				     		xmlElementString= xmlElementString +"<FileTransferEnd>"
-				 	      			+"\n"+"<LoginName>"+action.getLoginName()+"</LoginName>"
-				 	      			+"\n"+"<DateTimeUTC>"+action.getDateTimeUTC()+"</DateTimeUTC>"
-				 	      	+"\n"+"<UserFileName>"+action.getUserFileName()+"</UserFileName>"
-				 	      	+"\n"+"<FileName>"+action.getFileName()+"</FileName>"
-				 	      	+"\n"+"<Status>"+action.getStatus()+"</Status>"
-				 	      	+"\n"+"</FileTransferEnd>"
-				 	      	+"\n"+"\n";
-					 
-					 }	
-			}
-				//Adding ParticipentLeft Elements			 
-				 xmlElementString= xmlElementString +"<ParticipantLeft>"
-			      			+"\n"+"<LoginName>"+p.getLoginName()+"</LoginName>"
-			      			//+"\n"+"<DateTimeUTC>"+p.getDateTimeUtc()+"</DateTimeUTC>"
-//			      	+"\n"+"<InternalFlag>"+pe.getInternalFlag()+"</InternalFlag>"
-//			      	+"\n"+"<ConversationID>"+pe.getConversionId()+"<ConversationID/>"
-			      	+"\n"+"<CorporateEmailId>"+p.getCorporateEmailId()+"<CorporateEmailID>"
-			      	+"\n"+"</ParticipantLeft>"
-			      	+"\n"+"\n";
-					 }
-			}
-			 xmlElementString= xmlElementString+"<EndTimeUTC>"+"123456"+"<EndTimeUtc/>"
-				        +"\n" +"</Conversation>"+"\n"
-				        +"\n"+"</FileDump>";
-	    	//returning the final created string of Elements
-			 String finalXmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+"\n"+xmlElementString ;
-			 LocalDate currentDate = LocalDate.now();
-	         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMMMyyyy", Locale.ENGLISH);
-	         String formattedDate = currentDate.format(formatter).toLowerCase(); // e.g., "13sept2023"
-	         File directory = new File("C:\\work\\xml\\"+formattedDate);
-	         if (!directory.exists()){
-	             directory.mkdirs(); // This will create any missing directories in the path.
-	         }
-             FileWriter file1 = new FileWriter(directory.getAbsolutePath() + "\\" + c.getRoomId() + ".xml");
-         	file1.write(finalXmlString);   
-	        file1.flush();  
-	       file1.close();       	
-	    	}
-		}	
-   log.info("The XML file generated " ); 
-        return ResponseEntity.ok("Your XML data is successfully written into XmlForRoomChatInteractionJson.xml");	   
-		// return ResponseEntity.ok(cl);
-	 }
-
-	 //Converting date in epoch form
-	 public static long changeTimeStamptoSEpoch(String str) throws ParseException {
+	
+	//Converting date in epoch form
+	 public static String changeTimeStamptoSEpoch(String str) throws ParseException {
 		 SimpleDateFormat parserSDF = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy", Locale.ENGLISH);
 		 Date date = parserSDF.parse(str);
 		 long epoch = date.getTime();
-		 return epoch;
+		 str=Long.toString(epoch);
+		 String newDate= str.substring(0, 10);
+		 return newDate;
 	 }
 }	
 

@@ -11,6 +11,14 @@ public class Participant {
     public String loginName;
     @JsonProperty("CorporateEmailId") 
     public String corporateEmailId;
+    
+    public String getDateTimeUtc() {
+		return dateTimeUtc;
+	}
+	public void setDateTimeUtc(String dateTimeUtc) {
+		this.dateTimeUtc = dateTimeUtc;
+	}
+	public String dateTimeUtc;
     @JsonProperty("Actions") 
     public ArrayList<Action> actions;
 	public String getLoginName() {
