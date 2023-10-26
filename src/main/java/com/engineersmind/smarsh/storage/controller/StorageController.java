@@ -17,7 +17,10 @@ import com.engineersmind.smarsh.storage.service.StorageService;
 @RequestMapping("/file")
 public class StorageController {
 
-    @Autowired StorageService service;
+
+    @Autowired
+    StorageService service;
+
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file) {

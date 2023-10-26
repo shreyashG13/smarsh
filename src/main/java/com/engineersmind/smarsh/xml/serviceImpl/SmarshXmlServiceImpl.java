@@ -65,9 +65,7 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 		
 		List<ChatRoom> chatRoomList=new ArrayList<>();
 		Action action1=new Action();
-		Date date = new Date();
-		SimpleDateFormat DateFor = new SimpleDateFormat("dd MMMM yyyy");
-		String currentDate= DateFor.format(date);
+		
 		for(ChatRoom c1:requestFileDump1.getChatRooms()) {
 			
 			if(c1.getParticipants()!=null&&c1.getStartTimeUtc()!=null
@@ -87,6 +85,9 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 			}
 		}
 	for(ChatRoom c:chatRoomList) {
+		Date date = new Date();
+		SimpleDateFormat DateFor = new SimpleDateFormat("yyyy MM dd");
+		String currentDate= DateFor.format(date);
 		String stri=changeTimeStamptoSEpoch(c.getStartTimeUtc());
 		List<Participant> participantList=new ArrayList<>();
 		List<Action>  actionList=new ArrayList<>();
@@ -125,7 +126,6 @@ public class SmarshXmlServiceImpl implements SmarshXmlService{
 			      	+"\n"+"</ParticipantEntered>"
 			      	+"\n"+"\n";
 				action1.setLoginName(p1.getLoginName());
-				
 				}
 				}
 	   for(Action action:actionList) {
@@ -207,8 +207,11 @@ if(participant.getDateTimeUtc()!=null) {
 				        +"\n"+"</FileDump>";
 	    	//returning the final created string of Elements
 			 String finalXmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+"\n"+xmlElementString ;
-			 Files.createDirectories(Paths.get("C:\\work\\xml\\"+currentDate+"\\"));
-			 FileWriter file1 = new FileWriter("C:\\work\\xml\\"+currentDate+"\\"+c.getRoomId()+".xml");
+			  
+			 SimpleDateFormat parserSDF = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy", Locale.ENGLISH);
+			 Date date1 = parserSDF.parse(c.getStartTimeUtc());
+			 Files.createDirectories(Paths.get("C:\\work\\xml\\"+date1+"\\"));
+			 FileWriter file1 = new FileWriter("C:\\work\\xml\\"+date1+"\\"+c.getRoomId()+".xml");
 		    	file1.write(finalXmlString);   
 	        file1.flush();    
 	        file1.close();       	
