@@ -28,6 +28,8 @@ api:
   url: https://bff.staging.iconnections.io/api/message/history
  auth:
   token: 4cabc247-ae3c-4f43-8aba-c5754f3ff075
+ historical:
+  data: true
 #api.base.url=https://bff.staging.iconnections.io/api/message/history
 #api.auth.token=4cabc247-ae3c-4f43-8aba-c5754f3ff075
 #server:

@@ -17,11 +17,8 @@ public class JsonDataController {
         this.jsonDataService = jsonDataService;
     }
 
-    @GetMapping("/json-data/{date}/{historicalData}")
-    public String getJsonData(
-        @PathVariable String date, 
-        @PathVariable boolean historicalData) {
-        
-        return jsonDataService.fetchJsonData(date, historicalData);
+    @GetMapping("/json-data/{date}")
+    public String getJsonData(@PathVariable String date) {
+        return jsonDataService.fetchJsonData(date);
     }
 }

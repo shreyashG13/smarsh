@@ -6,14 +6,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.engineersmind.smarsh.storage.service.JsonDataService;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class JsonDataControllerTest {
 
@@ -26,33 +25,26 @@ public class JsonDataControllerTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this); // Initialize annotated mocks
-
-        // Create the controller instance with the mocked service
+        MockitoAnnotations.openMocks(this);
         jsonDataController = new JsonDataController(jsonDataService);
-
-        // Create the MockMvc instance
         mockMvc = MockMvcBuilders.standaloneSetup(jsonDataController).build();
     }
 
     @Test
     public void testGetJsonData() throws Exception {
-        // Arrange
-        String date = "2023-10-05";
-        boolean historicalData = true;
-        String jsonData = "Your JSON Data"; // Replace with your expected JSON data
+        // The date for testing. In your real tests, this might be dynamically calculated
+        String testDate = "2023-10-25";
+        String mockJsonResponse = "mocked JSON response";
 
-        // Mock the service method
-        when(jsonDataService.fetchJsonData(date, historicalData)).thenReturn(jsonData);
+        // Mock the service to return a successful response
+        when(jsonDataService.fetchJsonData(testDate)).thenReturn(mockJsonResponse);
 
-        // Act and Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/json-data/{date}/{historicalData}", date, historicalData)
+        mockMvc.perform(get("/json-data/{date}", testDate)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(jsonData));
+                .andExpect(content().string(mockJsonResponse));
 
-        // Verify that the service method was called with the correct arguments
-        verify(jsonDataService, times(1)).fetchJsonData(date, historicalData);
+        verify(jsonDataService, times(1)).fetchJsonData(testDate);
     }
 }
