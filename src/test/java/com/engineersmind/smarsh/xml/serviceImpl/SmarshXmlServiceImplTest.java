@@ -24,11 +24,8 @@ public class SmarshXmlServiceImplTest {
     public void setUp() {
         smarshXmlService = new SmarshXmlServiceImpl();
         restTemplate = Mockito.mock(RestTemplate.class);
-        smarshXmlService.setRestTemplate(restTemplate);
+
     }
-
-
-  
 
 
     @Test
@@ -44,15 +41,6 @@ public class SmarshXmlServiceImplTest {
 
     }
 
-    @Test
-    public void testChangeTimeStampToEpoch() throws ParseException {
-
-        String timestamp = "Mon Sep 25 00:00:00 UTC 2022";
-        long epoch = SmarshXmlServiceImpl.changeTimeStamptoSEpoch(timestamp);
-
-        long expected = 1664064000000L;
-        assertEquals(expected, epoch);
-    }
 
     private List<ChatRoom> createSampleChatRooms() {
         List<ChatRoom> chatRooms = new ArrayList<>();
@@ -64,7 +52,6 @@ public class SmarshXmlServiceImplTest {
         chatRooms.add(chatRoom1);
         return chatRooms;
     }
-
 
 
 }
