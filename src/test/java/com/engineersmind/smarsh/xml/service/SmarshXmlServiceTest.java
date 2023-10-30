@@ -42,5 +42,12 @@ public class SmarshXmlServiceTest {
             String mockXmlData = "<xml>...</xml>";
             return ResponseEntity.ok(mockXmlData);
         }
+
+		@Override
+		public ResponseEntity<?> getApiRequestpastdata(String startDate, String endDate)
+				throws MalformedURLException, IOException, ParseException {
+			// TODO Auto-generated method stub
+			return null;
+		}
     }
 }

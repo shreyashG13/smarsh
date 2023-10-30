@@ -61,7 +61,7 @@ public class StorageControllerTest {
         // Arrange
         String fileName = "test.txt";
         byte[] fileData = "Hello, World!".getBytes();
-        ByteArrayResource resource = new ByteArrayResource(fileData);
+        //ByteArrayResource resource = new ByteArrayResource(fileData);
 
         when(storageService.downloadFile(fileName)).thenReturn(fileData);
 
