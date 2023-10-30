@@ -2,12 +2,14 @@
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
+
 # Ignore Eclipse-specific files
 .classpath
 .project
 .settings/
 .mvn
-
+#ignoring temp claspath
+.temp-SmarshApplication-classpath-arg-*.txt
 
 ### Eclipse ###
 
